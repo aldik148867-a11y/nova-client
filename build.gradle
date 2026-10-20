@@ -3,12 +3,15 @@ plugins {
 }
 version = '1.0.0'
 base { archivesName = 'novaclient' }
-repositories {}
+def fapi = "0.139.0+1.21.11"
 dependencies {
     minecraft "com.mojang:minecraft:1.21.11"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:0.18.1"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.139.0+1.21.11"
+    modImplementation fabricApi.module("fabric-api-base", fapi)
+    modImplementation fabricApi.module("fabric-lifecycle-events-v1", fapi)
+    modImplementation fabricApi.module("fabric-key-binding-api-v1", fapi)
+    modImplementation fabricApi.module("fabric-rendering-v1", fapi)
 }
 java { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21 }
 tasks.withType(JavaCompile) { options.release = 21 }

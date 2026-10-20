@@ -3,13 +3,13 @@ package nova;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayDeque;
@@ -21,7 +21,7 @@ public class NovaClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        menuKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.novaclient.menu",
+        menuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.novaclient.menu",
                 InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, KeyMapping.Category.MISC));
 
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
@@ -37,13 +37,16 @@ public class NovaClient implements ClientModInitializer {
         });
 
         HudElementRegistry.attachElementAfter(VanillaHudElements.CROSSHAIR,
-                ResourceLocation.fromNamespaceAndPath("novaclient", "hud"), NovaClient::render);
+                Identifier.fromNamespaceAndPath("novaclient", "hud"), NovaClient::render);
     }
 
     static void key(GuiGraphics g, Minecraft mc, String t, int x, int y, int w, int h, boolean down) {
         g.fill(x, y, x + w, y + h, down ? 0xCCFFFFFF : 0x88000000);
         g.drawString(mc.font, t, x + (w - mc.font.width(t)) / 2, y + (h - 8) / 2, down ? 0xFF000000 : 0xFFFFFFFF, false);
     }
+
+    static int frames, fpsVal; static long fpsT;
+    static int fps() { frames++; long n = System.currentTimeMillis(); if (n - fpsT >= 1000) { fpsVal = frames; frames = 0; fpsT = n; } return fpsVal; }
 
     static void render(GuiGraphics g, net.minecraft.client.DeltaTracker dt) {
         Minecraft mc = Minecraft.getInstance();
@@ -54,7 +57,7 @@ public class NovaClient implements ClientModInitializer {
             g.fill(cx - 6, cy - 1, cx - 2, cy + 1, c); g.fill(cx + 2, cy - 1, cx + 6, cy + 1, c);
             g.fill(cx - 1, cy - 6, cx + 1, cy - 2, c); g.fill(cx - 1, cy + 2, cx + 1, cy + 6, c);
         }
-        if (Config.fps) g.drawString(mc.font, mc.getFps() + " FPS", 6, 6, 0xFFFFFFFF, true);
+        if (Config.fps) g.drawString(mc.font, fps() + " FPS", 6, 6, 0xFFFFFFFF, true);
         if (Config.keystrokes) {
             int x = 6, y = 24, s = 20, p = 2;
             key(g, mc, "W", x + s + p, y, s, s, o.keyUp.isDown());

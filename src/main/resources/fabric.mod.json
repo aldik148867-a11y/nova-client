@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "novaclient",
+  "version": "1.0.0",
+  "name": "Nova Client",
+  "description": "HUD: Keystrokes, CPS, FPS, custom crosshair, menu (Right Shift)",
+  "environment": "client",
+  "entrypoints": { "client": ["nova.NovaClient"] },
+  "depends": { "fabricloader": ">=0.16.0", "minecraft": "~1.21.11", "fabric-api": "*" }
+}
